@@ -75,13 +75,10 @@ class Animations {
 
   setBones(bones) {
     this.bones = bones;
-    console.log('setting bones', bones);
   }
 
   startAnimation(name) {
     if (name !== 'shoot' && this.animPlaying[name]) return;
-
-    console.log('starting animation', name);
 
     const rotationAnim = this.animations[name + "Rotations"];
 
@@ -94,8 +91,6 @@ class Animations {
       positionAnim.start();
 
     this.animPlaying[name] = true;
-
-    console.log(this.animPlaying);
   }
 
   stopAnimation(name) {

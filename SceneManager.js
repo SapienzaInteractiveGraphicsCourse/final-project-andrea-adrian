@@ -84,7 +84,6 @@ class SceneManager {
       player.scene.offset = {x: 0, y: 0.5, z: 0};
       player.scene.scale.set(2,2,2);
       player.scene.name = "player2";
-      console.log(player.scene);
 
       
       player.scene.bones = player.scene.getObjectByName("spine");
@@ -127,7 +126,6 @@ class SceneManager {
       player.scene.offset = {x: 0, y: 0.5, z: 0};
       player.scene.scale.set(2,2,2);
       player.scene.name = "bot";
-      console.log(player.scene);
       
       player.scene.bones = player.scene.getObjectByName("spine");
       //player.scene.bones.up = new THREE.Vector3(0, 0, -1);

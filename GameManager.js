@@ -42,8 +42,6 @@ class GameManager {
       this.gameEntities[model.name] = model;
     });
 
-    console.log(models);
-
     this.playerAnimations.setBones(this.gameEntities.player2.bones);
     this.botAnimations.setBones(this.gameEntities.bot.bones);
 
@@ -85,7 +83,6 @@ class GameManager {
         const offset = new THREE.Quaternion().setFromAxisAngle({x:0,y:0,z:1}, -this.playerController.OFFSET_VALUE);
         
         let result = defQuaternion.multiply(offset);
-        console.log(result);
 
         this.gameEntities.player2.bones.getObjectByName(key).quaternion.copy(result);
         this.gameEntities.bot.bones.getObjectByName(key).quaternion.copy(result);
@@ -103,10 +100,6 @@ class GameManager {
       key = key.replace('_circle', '');
       if(entity)
         entity.userData.physicsBody = rigidBodies[key];
-
-      if(key === 'ball'){
-        console.log('ball', entity.userData.physicsBody, rigidBodies[key]);
-      }
     }
   }
 
@@ -160,7 +153,7 @@ class GameManager {
 
           let vel = new THREE.Vector3(ball_pos.x() - bot_pos.x(), 0, ball_pos.z() - bot_pos.z()).multiplyScalar(this.botMaxVel);
 
-          console.log(ball_pos.x(), ball_pos.z());
+          //console.log(ball_pos.x(), ball_pos.z());
 
           let ammoVel = objAmmo.getLinearVelocity(); // get current velocity
 
