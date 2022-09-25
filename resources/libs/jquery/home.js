@@ -16,12 +16,6 @@ function loadHome(){
         document.getElementById('aud').innerHTML = 'Audio Level : '+e.target.value;
         localStorage.audio = e.target.value;
     });
-    var radio = document.getElementsByName('diff');
-    for(var i=0;i<radio.length;i++){
-        radio[i].addEventListener('change',function(e){
-            if(e.target.checked) localStorage.level = e.target.value;
-        });
-    }
     document.getElementById('username').addEventListener('change',function(e){
         localStorage.name = e.target.value;
     })
