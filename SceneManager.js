@@ -1,10 +1,11 @@
 import * as THREE from './resources/libs/three/build/three.module.js';
 import {GLTFLoader} from './resources/libs/loaders/GLTFLoader.js';
 import {ColladaLoader} from './resources/libs/loaders/ColladaLoader.js';
-import {clone} from './resources/libs/utils/SkeletonUtils.js';
+
 
 class SceneManager {
   models = [];
+  player_bones = null;
   counter = 0;
   modelsToLoad = 12;
   onLoadFinished;
@@ -149,12 +150,16 @@ class SceneManager {
       });
       let scale = {x: 3.5, y: 2, z: 3};
       
-      player.scene.rotateY(Math.PI/2);
+      //player.scene.rotateY(Math.PI/2);
       
-      player.scene.offset = {x: 0, y: -1.5, z: 0};
+      player.scene.offset = {x: 0, y: 0.5, z: 0};
       player.scene.scale.set(2,2,2);
       player.scene.name = "player2";
       console.log(player.scene);
+
+      
+      player.scene.bones = player.scene.getObjectByName("spine");
+      //player.scene.bones.up = new THREE.Vector3(0, 0, -1);
 
       player.scene.traverse(child => {
         if (child.isMesh) {

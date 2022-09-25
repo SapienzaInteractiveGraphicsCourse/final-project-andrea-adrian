@@ -1,4 +1,6 @@
-import { PhysicsEngine } from './Physics.js'
+import { PhysicsEngine } from './Physics.js';
+import { KFRAMES, BONE_NAMES } from './Animations.js';
+import * as THREE from './resources/libs/three/build/three.module.js';
 
 class GameManager {
   gameEntities = {};
@@ -15,6 +17,8 @@ class GameManager {
 
   accumForce = {x: 0, y: 0, z: 0};
   FORCE_INCREASE = 0.1;
+
+  playerAnimations;
 
   constructor() {
     if(!GameManager.instance) {
@@ -33,6 +37,11 @@ class GameManager {
     models.forEach(model => {
       this.gameEntities[model.name] = model;
     });
+
+    console.log(models);
+
+    this.playerAnimations.setBones(this.gameEntities.player2.bones);
+
     this.physEngine.onLoadFinished = this.onPhysicsLoadFinished.bind(this);
     this.physEngine.onBallCollision = this.onBallContact.bind(this);
 
@@ -47,6 +56,37 @@ class GameManager {
     }
   }
 
+  setPose(){
+    // set default pose
+    const defVec = new THREE.Vector3(
+      KFRAMES.default.positions['spineX'],
+      KFRAMES.default.positions['spineY'],
+      KFRAMES.default.positions['spineZ']
+    )
+
+    this.gameEntities.player2.bones.getObjectByName('spine').position.set(defVec.x, defVec.y, defVec.z);
+
+    for(let [key, boneName] of Object.entries(BONE_NAMES)) {
+      const defQuaternion = new THREE.Quaternion(
+        KFRAMES.default.rotations[boneName+'X'],
+        KFRAMES.default.rotations[boneName+'Y'],
+        KFRAMES.default.rotations[boneName+'Z'],
+        KFRAMES.default.rotations[boneName+'W']
+      )
+
+      if(key === 'thigh_L'){
+        const offset = new THREE.Quaternion().setFromAxisAngle({x:0,y:0,z:1}, -this.playerController.OFFSET_VALUE);
+        
+        let result = defQuaternion.multiply(offset);
+        console.log(result);
+
+        this.gameEntities.player2.bones.getObjectByName(key).quaternion.copy(result);
+      } else {
+        this.gameEntities.player2.bones.getObjectByName(key).quaternion.copy(defQuaternion);
+      }
+    }
+  }
+
   updateRigidBodies(rigidBodies) {
     for (let [key, entity] of Object.entries(this.gameEntities)){
       key = key.replace('_debug', '');
@@ -57,6 +97,8 @@ class GameManager {
   }
 
   updateState(deltaTime, ballHitSound, matchSound){
+    this.playerAnimations.update(deltaTime);
+    
     if(!this.reset) {
       for (const [key, val] of Object.entries(this.gameEntities)){
         if(!val || !val.userData.physicsBody){
@@ -72,6 +114,24 @@ class GameManager {
 
           let ammoVel = objAmmo.getLinearVelocity(); // get current velocity
 
+          if(vel.x != 0 || vel.z != 0){
+            this.playerAnimations.stopAnimation('idle');
+
+            if(vel.z > 0){
+              this.playerAnimations.startAnimation('walkRight');
+            } else if(vel.z < 0){
+              this.playerAnimations.startAnimation('walkLeft');
+            } else {
+            this.playerAnimations.startAnimation('walk'); 
+            }
+          
+          } else {
+            this.playerAnimations.stopAnimation('walkLeft');
+            this.playerAnimations.stopAnimation('walkRight');
+            this.playerAnimations.stopAnimation('walk');
+            this.playerAnimations.startAnimation('idle');
+          }
+
           ammoVel.setX(-vel.x);
           ammoVel.setY(0);
           ammoVel.setZ(vel.z);
@@ -85,6 +145,8 @@ class GameManager {
             this.accumForce.y += 0.5 * this.FORCE_INCREASE;
           } else if(this.shotBall1) {
             this.shotBall1 = false;
+
+            this.playerAnimations.startAnimation('shoot');
             if(distance < 2.0 || this.ballServe == 2 && !this.justServed) {
               // shoot ball
               //console.log('shooting');

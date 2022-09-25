@@ -3,7 +3,7 @@ import { SceneManager } from './SceneManager.js';
 import { GameManager } from './GameManager.js';
 import * as THREE from './resources/libs/three/build/three.module.js';
 
-import TWEEN from './resources/libs/tween/build/tween.esm.js';
+import { Animations } from './Animations.js';
 
 import { createCameraControls, createPlayerControls } from './controls.js';
 
@@ -38,6 +38,8 @@ function main() {
   
   const gameManager = new GameManager();
   gameManager.onLoadFinished = start;
+  
+  gameManager.playerAnimations = new Animations();
 
   const clock = new THREE.Clock();
 
@@ -46,48 +48,8 @@ function main() {
   sceneManager.loadCourt();
   sceneManager.loadBall();
   sceneManager.loadPlayers();
-  sceneManager.loadLights();
-
-  var ball = sceneManager.models[1]
-  var p1 = sceneManager.models[2];
-  var p2 = sceneManager.models[3];
+  sceneManager.loadLights();  
   
-  var tween1 = new TWEEN.Tween({x:0, y:2, z:0})
-  .to({x:5, y:0, z:0},2000)
-  .onUpdate((coords) => {
-    ball.position.x = coords.x;
-    ball.position.y = coords.y;
-    ball.position.z = coords.z;
-  })
-  .easing(TWEEN.Easing.Quadratic.Out)
-  .repeat(5)
-  .delay(1000);
-  tween1.start();
-
-  var tween2 = new TWEEN.Tween({x:8, y:2, z:0})
-  .to({x:5, y:2, z:0},2000)
-  .onUpdate((coords) => {
-    p1.position.x = coords.x;
-    p1.position.y = coords.y;
-    p1.position.z = coords.z;
-  })
-  .easing(TWEEN.Easing.Quadratic.Out)
-  .repeat(5)
-  .delay(500);
-  tween2.start();
-
-  var tween3 = new TWEEN.Tween({x:-8, y:2, z:0})
-  .to({x:-5, y:2, z:0},2000)
-  .onUpdate((coords) => {
-    p2.position.x = coords.x;
-    p2.position.y = coords.y;
-    p2.position.z = coords.z;
-  })
-  .easing(TWEEN.Easing.Quadratic.Out)
-  .repeat(5)
-  .delay(500);
-  tween3.start();
-
   let cameraControls, playerControls;
 
   function start(){
@@ -100,19 +62,19 @@ function main() {
     document.addEventListener('keyup', playerControls.handleInput.bind(playerControls));
 
     gameManager.playerController = playerControls;
+    gameManager.setPose();
 
     requestAnimationFrame(render);
-    
   }
 
   function render() {
+    //gameManager.setPose();
     const deltaTime = clock.getDelta();
 
     gameManager.updateState(deltaTime, ballHitSound, matchSound);
     cameraControls.update();
     
     renderer.update(deltaTime);
-    //TWEEN.update();
 
     requestAnimationFrame(render);
   }

@@ -10,6 +10,8 @@ class PlayerController {
 
   SPEED = 5;
 
+  OFFSET_VALUE = 0;
+
   constructor() {
   }
 
@@ -59,6 +61,7 @@ class PlayerController {
           break;
         case "Space":
           this.inputKeys.fire = false;
+          this.OFFSET_VALUE += Math.PI / 25;
           break;
       }
     }
