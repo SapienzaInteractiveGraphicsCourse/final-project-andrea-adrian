@@ -3,7 +3,7 @@ const STATE = { DISABLE_DEACTIVATION : 4 }
 
 class PhysicsEngine {
   rigidBodies = {
-    player1:null,
+    bot:null,
     player2:null,
     ball:null,
     court:null,
@@ -160,26 +160,27 @@ class PhysicsEngine {
 
   createPlayers(){
     const k = 0.5; // 0.7071067811865475;
-    let pos = {x: 8, y: 2, z: 0};
+    let player_pos = {x: -8, y: 2, z: 0};
     let scale = {x: 3.5, y: 2, z: 3};
     let quat = {x: k, y: k, z: k, w: -k};
     let mass = 100;
 
-    let body = this.buildBody(pos, scale, quat, mass);
+    // bot
+    let bot_pos = {x: 14, y: 2, z: 0};
+    let body = this.buildBody(bot_pos, scale, quat, mass);
     body.setFriction(0);
     body.setRollingFriction(0);
     body.setActivationState(STATE.DISABLE_DEACTIVATION);
     body.setAngularFactor( 0, 0, 0 );
-    body.tag = "player";
+    body.tag = "bot";
 
     this.physicsWorld.addRigidBody(body);
-    this.rigidBodies.player1 = body;
+    this.rigidBodies.bot = body;
 
-    // player 2
-    pos.x *= -1;
+    // player
     quat = {x: -k, y: k, z: k, w: k};
 
-    body = this.buildBody(pos, scale, quat, mass);
+    body = this.buildBody(player_pos, scale, quat, mass);
 
     body.setFriction(0);
     body.setRollingFriction(0);

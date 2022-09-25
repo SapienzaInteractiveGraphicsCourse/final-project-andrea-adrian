@@ -40,6 +40,7 @@ function main() {
   gameManager.onLoadFinished = start;
   
   gameManager.playerAnimations = new Animations();
+  gameManager.botAnimations = new Animations();
 
   const clock = new THREE.Clock();
 

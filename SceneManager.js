@@ -80,9 +80,6 @@ class SceneManager {
           node.receiveShadow = true;
         }
       });
-      let scale = {x: 3.5, y: 2, z: 3};
-      
-      //player.scene.rotateY(Math.PI/2);
       
       player.scene.offset = {x: 0, y: 0.5, z: 0};
       player.scene.scale.set(2,2,2);
@@ -111,21 +108,39 @@ class SceneManager {
       this.scene.add(circle);
       this.models.push(circle);
 
-      // DEBUG
-
-      // player
-      const newcube = new THREE.Mesh(new THREE.BoxBufferGeometry(scale.x, scale.y, scale.z), new THREE.MeshPhongMaterial({color: 0x00FF00}));
-
-      newcube.name = "player2_debug";
-      newcube.material.transparent = true;
-      newcube.material.opacity = 0.5;
-
-      this.models.push(newcube);
       this.models.push(player.scene);
-      
-      this.scene.add(newcube);
       this.scene.add(player.scene);
 
+      this.progressLoading();
+    });
+
+    this.player_modelLoader.load("./resources/assets/models/Player/player.dae", (player) => {
+      player.scene.traverse(function (node) {
+        if (node.isMesh || node.isLight) {
+          node.castShadow = true;
+          node.receiveShadow = true;
+        }
+      });
+      
+      //player.scene.rotateY(Math.PI/2);
+      
+      player.scene.offset = {x: 0, y: 0.5, z: 0};
+      player.scene.scale.set(2,2,2);
+      player.scene.name = "bot";
+      console.log(player.scene);
+      
+      player.scene.bones = player.scene.getObjectByName("spine");
+      //player.scene.bones.up = new THREE.Vector3(0, 0, -1);
+      player.scene.traverse(child => {
+        if (child.isMesh) {
+          const material = new THREE.MeshPhongMaterial({
+            color: 0xFF0000,    // red
+          });
+          child.material = material;
+        }
+      });
+      this.models.push(player.scene);
+      this.scene.add(player.scene);
       this.progressLoading();
     });
   }

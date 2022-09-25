@@ -11,6 +11,7 @@ class GameManager {
   ballServe = 2; // 1 = bot, 2 = player, 0 no one can serve
   lastTouch = 0; // 1 = bot, 2 = player, 0 no one touched the ball
   justServed = false;
+  justShot = false;
 
   playerController;
   onLoadFinished;
@@ -19,6 +20,9 @@ class GameManager {
   FORCE_INCREASE = 0.1;
 
   playerAnimations;
+  botAnimations;
+
+  botMaxVel = 10;
 
   constructor() {
     if(!GameManager.instance) {
@@ -41,6 +45,7 @@ class GameManager {
     console.log(models);
 
     this.playerAnimations.setBones(this.gameEntities.player2.bones);
+    this.botAnimations.setBones(this.gameEntities.bot.bones);
 
     this.physEngine.onLoadFinished = this.onPhysicsLoadFinished.bind(this);
     this.physEngine.onBallCollision = this.onBallContact.bind(this);
@@ -66,6 +71,8 @@ class GameManager {
 
     this.gameEntities.player2.bones.getObjectByName('spine').position.set(defVec.x, defVec.y, defVec.z);
 
+    this.gameEntities.bot.bones.getObjectByName('spine').position.set(defVec.x, defVec.y, defVec.z);
+
     for(let [key, boneName] of Object.entries(BONE_NAMES)) {
       const defQuaternion = new THREE.Quaternion(
         KFRAMES.default.rotations[boneName+'X'],
@@ -81,10 +88,13 @@ class GameManager {
         console.log(result);
 
         this.gameEntities.player2.bones.getObjectByName(key).quaternion.copy(result);
+        this.gameEntities.bot.bones.getObjectByName(key).quaternion.copy(result);
       } else {
         this.gameEntities.player2.bones.getObjectByName(key).quaternion.copy(defQuaternion);
+        this.gameEntities.bot.bones.getObjectByName(key).quaternion.copy(defQuaternion);
       }
-    }
+    };
+    this.botAnimations.startAnimation('idle');
   }
 
   updateRigidBodies(rigidBodies) {
@@ -93,6 +103,10 @@ class GameManager {
       key = key.replace('_circle', '');
       if(entity)
         entity.userData.physicsBody = rigidBodies[key];
+
+      if(key === 'ball'){
+        console.log('ball', entity.userData.physicsBody, rigidBodies[key]);
+      }
     }
   }
 
@@ -136,6 +150,42 @@ class GameManager {
           ammoVel.setY(0);
           ammoVel.setZ(vel.z);
         }
+        else if(val.name === "bot"){
+          // calculate velocity
+          let ball_transform = this.physEngine.getTransform(this.gameEntities.ball.userData.physicsBody);
+          let ball_pos = ball_transform.getOrigin(); 
+
+          let bot_transform = this.physEngine.getTransform(this.gameEntities.bot.userData.physicsBody);
+          let bot_pos = bot_transform.getOrigin();
+
+          let vel = new THREE.Vector3(ball_pos.x() - bot_pos.x(), 0, ball_pos.z() - bot_pos.z()).multiplyScalar(this.botMaxVel);
+
+          console.log(ball_pos.x(), ball_pos.z());
+
+          let ammoVel = objAmmo.getLinearVelocity(); // get current velocity
+
+          if(vel.x != 0 || vel.z != 0){
+            this.botAnimations.stopAnimation('idle');
+
+            if(vel.z > 0){
+              this.botAnimations.startAnimation('walkLeft');
+            } else if(vel.z < 0){
+              this.botAnimations.startAnimation('walkRight');
+            } else {
+            this.botAnimations.startAnimation('walk'); 
+            }
+          
+          } else {
+            this.botAnimations.stopAnimation('walkLeft');
+            this.botAnimations.stopAnimation('walkRight');
+            this.botAnimations.stopAnimation('walk');
+            this.botAnimations.startAnimation('idle');
+          }
+
+          ammoVel.setX(vel.x);
+          ammoVel.setY(0);
+          ammoVel.setZ(vel.z);
+        }
         else if(val.name === "ball"){
           const distance = this.getBallDistanceFromPlayer('player2');
           
@@ -151,6 +201,8 @@ class GameManager {
               //console.log('shooting');
               ballHitSound.play();
               this.physEngine.shootBall(this.accumForce, this.ballServe);
+
+              this.justShot = true;
 
               if(this.ballServe == 2) {
                 this.justServed = true;
@@ -217,10 +269,35 @@ class GameManager {
       }
     }
     else {
-      this.state.updateScore(PLAYERS.PLAYER_2);
-      this.reset = true;
-      this.lastTouch = 0;
+      if(botOrPlayer == 'player' && this.lastTouch === 2){
+        this.state.updateScore(PLAYERS.PLAYER_2);
+        this.reset = true;
+        this.lastTouch = 0;
+      } else if(botOrPlayer == 'bot' && this.lastTouch === 1){
+        this.state.updateScore(PLAYERS.PLAYER_1);
+        this.reset = true;
+        this.lastTouch = 0;
+      } else {
+        if(this.lastTouch === 1) {
+          this.state.updateScore(PLAYERS.PLAYER_1);
+          this.reset = true;
+          this.lastTouch = 0;
+        }
+        else if(this.lastTouch === 2) {
+          this.state.updateScore(PLAYERS.PLAYER_2);
+          this.reset = true;
+          this.lastTouch = 0;
+        } else {
+          if(this.justShot) {
+            this.state.updateScore(PLAYERS.PLAYER_2);
+            this.reset = true;
+            this.lastTouch = 0;
+          }
+        }
+      }
     }
+
+    this.justShot = false;
     this.updateScoreTable();
     matchSound.play();
     
