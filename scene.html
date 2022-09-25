@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript">
+  function loadName(){
+    var name = localStorage.name ? localStorage.name : "Player";
+    document.getElementsByClassName('play')[0].innerHTML = name;
+  }
+</script>
+</head>
+
+<title>Virtual Tennis</title>
+
+<body onload = "loadName()">
+  <div id ="cont">
+    <div class="up">COURT NO. 1</div>
+    <div id="bot">
+      <div id="int">
+        <div class="ter">PREVIOUS SETS</div>
+        <div class="ter">PLAYER</div>
+        <div class="ter">
+          <div class="ter">SETS</div>
+          <div class="ter">GAMES</div>
+          <div class="ter">POINTS</div>
+        </div>
+      </div>
+      <div class="riga">
+        <div class="ter">
+          <div class="prev">0</div>
+          <div class="prev">0</div>
+        </div>
+        <div class="ter">
+          <div class="play"></div>
+        </div>
+        <div class="ter">
+          <div class="set">0</div>
+          <div class="set game">0</div>
+          <div class="point">0</div>
+        </div>
+      </div>
+      <div class="riga">
+        <div class="ter">
+          <div class="prev">0</div>
+          <div class="prev">0</div>
+        </div>
+        <div class="ter">
+          <div class="play">A.I.</div>
+        </div>
+        <div class="ter">
+          <div class="set">0</div>
+          <div class="set game">0</div>
+          <div class="point">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="win">
+    <div class="up">WINNER</div>
+    <div class="play"></div>
+  </div>
+  <div id="back">
+    <button><a href="index.html">Back</a></button>
+    <p>Press SPACEBAR to start new match</p>
+  </div>
+  
+  <canvas id="c"></canvas>
+</body>
+
+<script type="module" src="game.js"></script>
+
+</html>
