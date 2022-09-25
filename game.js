@@ -5,7 +5,7 @@ import * as THREE from './resources/libs/three/build/three.module.js';
 
 import TWEEN from './resources/libs/tween/build/tween.esm.js';
 
-import { createCameraControls, createPlayerControls } from './Controls.js';
+import { createCameraControls, createPlayerControls } from './controls.js';
 
 function main() {
   // three initializations
