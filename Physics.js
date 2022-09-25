@@ -86,7 +86,7 @@ class PhysicsEngine {
   createWalls(){
     // WALL TOP
     let pos = {x: 21.5, y: 0, z: 0};
-    let scale = {x: .5, y: 10, z: 30};
+    let scale = {x: .5, y: 100, z: 30};
     let quat = {x: 0, y: 0, z: 0, w: 1};
     let mass = 0;
 
@@ -289,7 +289,7 @@ class PhysicsEngine {
         const contactPoint = contactManifold.getContactPoint(j);
         const distance = contactPoint.getDistance();
         
-        if (distance < 0.03) {
+        if (distance < 0.0001) {        
           const rb0 = this.ammo.castObject(contactManifold.getBody0(), this.ammo.btRigidBody);
           const rb1 = this.ammo.castObject(contactManifold.getBody1(), this.ammo.btRigidBody);
           const worldPos = contactPoint.getPositionWorldOnA();
@@ -299,7 +299,7 @@ class PhysicsEngine {
             
             // check if ball is out
             if( Math.abs(worldPos.x()) > 14 || 
-            Math.abs(worldPos.z()) > 4.15 ){
+            Math.abs(worldPos.z()) > 5 ){
               this.onBallCollision('out', fieldPos, matchSound);
             } else {
               this.onBallCollision('in', fieldPos, matchSound);

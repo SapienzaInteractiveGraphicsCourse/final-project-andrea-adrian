@@ -79,7 +79,7 @@ class Animations {
   }
 
   startAnimation(name) {
-    if (this.animPlaying[name]) return;
+    if (name !== 'shoot' && this.animPlaying[name]) return;
 
     console.log('starting animation', name);
 

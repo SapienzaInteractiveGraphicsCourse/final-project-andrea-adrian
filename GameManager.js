@@ -8,8 +8,8 @@ class GameManager {
   shootingForce = 0;
   reset = false;
 
-  ballServe = 2; // 1 = player 1, 2 = player 2, 0 no one can serve
-  lastTouch = 0; // 1 = player 1, 2 = player 2, 0 no one touched the ball
+  ballServe = 2; // 1 = bot, 2 = player, 0 no one can serve
+  lastTouch = 0; // 1 = bot, 2 = player, 0 no one touched the ball
   justServed = false;
 
   playerController;
@@ -146,11 +146,9 @@ class GameManager {
           } else if(this.shotBall1) {
             this.shotBall1 = false;
 
-            this.playerAnimations.startAnimation('shoot');
             if(distance < 2.0 || this.ballServe == 2 && !this.justServed) {
               // shoot ball
               //console.log('shooting');
-              this.lastTouch = 1;
               ballHitSound.play();
               this.physEngine.shootBall(this.accumForce, this.ballServe);
 
@@ -159,6 +157,7 @@ class GameManager {
               }
 
             }
+            this.playerAnimations.startAnimation('shoot');
             this.accumForce = {x: 0, y: 0, z: 0};
           }
         }
@@ -202,10 +201,20 @@ class GameManager {
   onBallContact(inOut, botOrPlayer, matchSound){
     this.justServed = false;
 
-    if(inOut == 'in' && botOrPlayer=="bot" || inOut == 'out' && this.lastTouch != 1){
-      this.state.updateScore(PLAYERS.PLAYER_1);
-      this.reset = true;
-      this.lastTouch = 0;
+    console.log("ball contact", inOut, botOrPlayer, this.lastTouch);
+    if(inOut == 'in'){
+      if(botOrPlayer == 'player' && this.lastTouch === 2){
+        this.state.updateScore(PLAYERS.PLAYER_2);
+        this.reset = true;
+        this.lastTouch = 0;
+      } else if(botOrPlayer == 'bot' && this.lastTouch === 1){
+        this.state.updateScore(PLAYERS.PLAYER_1);
+        this.reset = true;
+        this.lastTouch = 0;
+      } else {
+        if(botOrPlayer == 'bot') this.lastTouch = 1;
+        else if(botOrPlayer == 'player') this.lastTouch = 2;
+      }
     }
     else {
       this.state.updateScore(PLAYERS.PLAYER_2);

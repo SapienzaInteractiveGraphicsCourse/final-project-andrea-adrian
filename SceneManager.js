@@ -7,7 +7,7 @@ class SceneManager {
   models = [];
   player_bones = null;
   counter = 0;
-  modelsToLoad = 12;
+  modelsToLoad = 6;
   onLoadFinished;
 
   constructor() {
@@ -60,77 +60,9 @@ class SceneManager {
       const court = model.scene.children[0];
       court.name = "court";
       court.scale.set(1.8,1.8,1.8);
-      let scale = {x: 45, y: 0.5, z: 40};
 
-      // DEBUG
-      let newcube = new THREE.Mesh(new THREE.BoxBufferGeometry(scale.x, scale.y, scale.z), new THREE.MeshPhongMaterial({color: 0xff0000}));
-      
-      newcube.material.transparent = true;
-      newcube.material.opacity = 0.5;
-      newcube.name = "court";
-
-      this.scene.add(newcube);
       this.scene.add(court);
-
-      this.models.push(newcube);
       this.models.push(court);
-
-      // NET
-      let pos = {x: 0, y: 1.75, z: 0};
-      scale = {x: .5, y: 1.75, z: 17};
-      newcube = new THREE.Mesh(new THREE.BoxBufferGeometry(scale.x, scale.y, scale.z), new THREE.MeshPhongMaterial({color: 0xffff00}));
-      
-      newcube.material.transparent = true;
-      newcube.material.opacity = 0.5;
-      newcube.position.set(pos.x, pos.y, pos.z);
-      newcube.name = "net";
-
-      this.scene.add(newcube);
-      this.models.push(newcube);
-
-      // WALLS
-
-      // WALL TOP
-      scale = {x: .5, y: 10, z: 30};
-      newcube = new THREE.Mesh(new THREE.BoxBufferGeometry(scale.x, scale.y, scale.z), new THREE.MeshPhongMaterial({color: 0xff00ff}));
-      
-      newcube.material.transparent = true;
-      newcube.material.opacity = 0.5;
-      newcube.name = "wall_top";
-
-      this.scene.add(newcube);
-      this.models.push(newcube);
-
-      // WALL BOTTOM
-      newcube = new THREE.Mesh(new THREE.BoxBufferGeometry(scale.x, scale.y, scale.z), new THREE.MeshPhongMaterial({color: 0xff00ff}));
-      
-      newcube.material.transparent = true;
-      newcube.material.opacity = 0.5;
-      newcube.name = "wall_bot";
-
-      this.scene.add(newcube);
-      this.models.push(newcube);
-
-      // WALL LEFT
-      scale = {x: 43, y: 10, z: 0.5};
-      newcube = new THREE.Mesh(new THREE.BoxBufferGeometry(scale.x, scale.y, scale.z), new THREE.MeshPhongMaterial({color: 0xff00ff}));
-      
-      newcube.material.transparent = true;
-      newcube.material.opacity = 0.5;
-      newcube.name = "wall_left";
-
-      this.scene.add(newcube);
-      this.models.push(newcube);
-
-      // WALL RIGHT
-      newcube = new THREE.Mesh(new THREE.BoxBufferGeometry(scale.x, scale.y, scale.z), new THREE.MeshPhongMaterial({color: 0xff00ff}));
-      
-      newcube.material.transparent = true;
-      newcube.material.opacity = 0.5;
-      newcube.name = "wall_right";
-
-      this.scene.add(newcube);
-      this.models.push(newcube);
 
       this.progressLoading();
 
